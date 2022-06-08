@@ -30,6 +30,7 @@
     "raspi-soft-pwm": "^6.0.1"
   },
   "devDependencies": {
+    "@types/node": "^17.0.41",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
     "eslint": "^8.17.0",
