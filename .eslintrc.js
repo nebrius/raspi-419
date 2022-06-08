@@ -16,6 +16,7 @@ module.exports = {
     project: ['./tsconfig.json'],
   },
   rules: {
-    "prettier/prettier": "error"
+    'prettier/prettier': 'error',
+    '@typescript-eslint/no-unnecessary-condition': 'error'
   }
 };
