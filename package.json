@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An implementation of the ECMA-419 spec on the Raspberry Pi",
   "main": "dist/index.js",
+  "types": "declarations",
   "repository": {
     "type": "git",
     "url": "https://github.com/nebrius/raspi-419.git"

@@ -1,3 +1,4 @@
+"use strict";
 /*
 MIT License
 
@@ -21,5 +22,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-export { Digital } from './digital';
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Base = exports.closed = void 0;
+// We put instances in a set to prevent them from being garbage collected until
+// close() is called
+const instances = new Set();
+exports.closed = Symbol();
+class Base {
+    constructor() {
+        this[_a] = false;
+        instances.add(this);
+    }
+    close() {
+        this[exports.closed] = true;
+        instances.delete(this);
+    }
+}
+exports.Base = Base;
+_a = exports.closed;
+//# sourceMappingURL=base.js.map

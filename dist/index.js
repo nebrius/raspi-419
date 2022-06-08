@@ -22,4 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-console.log('Hi ECMA-419');
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Digital = void 0;
+var digital_1 = require("./digital");
+Object.defineProperty(exports, "Digital", { enumerable: true, get: function () { return digital_1.Digital; } });
+//# sourceMappingURL=index.js.map
