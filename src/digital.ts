@@ -63,7 +63,7 @@ export class Digital extends Base {
   static OutputOpenDrain = 6;
 
   // Edge for onReadable, must be a number because it's valid to do
-  // Digital.Rising + DIgital.Falling
+  // Digital.Rising + Digital.Falling
   static Rising = 1;
   static Falling = 2;
 

@@ -23,9 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.I2C = exports.Digital = void 0;
+exports.PWM = exports.I2C = exports.Digital = void 0;
 var digital_1 = require("./digital");
 Object.defineProperty(exports, "Digital", { enumerable: true, get: function () { return digital_1.Digital; } });
 var i2c_1 = require("./i2c");
 Object.defineProperty(exports, "I2C", { enumerable: true, get: function () { return i2c_1.I2C; } });
+var pwm_1 = require("./pwm");
+Object.defineProperty(exports, "PWM", { enumerable: true, get: function () { return pwm_1.PWM; } });
 //# sourceMappingURL=index.js.map

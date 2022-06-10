@@ -132,7 +132,7 @@ Digital.InputPullUpDown = 4;
 Digital.Output = 5;
 Digital.OutputOpenDrain = 6;
 // Edge for onReadable, must be a number because it's valid to do
-// Digital.Rising + DIgital.Falling
+// Digital.Rising + Digital.Falling
 Digital.Rising = 1;
 Digital.Falling = 2;
 // Unnofficial extension to make TypeScript happy, must equal Rising + Falling
