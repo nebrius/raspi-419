@@ -26,17 +26,33 @@ SOFTWARE.
 // close() is called
 const instances = new Set<Base>();
 
-export const closed = Symbol();
+export const validateOpen = Symbol();
+
+export interface BaseProps {
+  target: unknown;
+}
 
 export class Base {
-  [closed] = false;
+  #closed = false;
 
-  constructor() {
+  #target: unknown;
+  get target() {
+    return this.#target;
+  }
+
+  constructor(options: BaseProps) {
+    this.#target = options.target;
     instances.add(this);
   }
 
   close() {
-    this[closed] = true;
+    this.#closed = true;
     instances.delete(this);
+  }
+
+  [validateOpen]() {
+    if (this.#closed) {
+      throw new Error('Cannot perform operation after closing');
+    }
   }
 }

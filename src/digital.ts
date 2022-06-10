@@ -24,7 +24,7 @@ SOFTWARE.
 
 // Implementation of https://419.ecma-international.org/#-10-io-classes-digital
 
-import { Base } from './base';
+import { Base, BaseProps, validateOpen } from './base';
 import {
   LOW,
   HIGH,
@@ -36,12 +36,9 @@ import {
 } from 'raspi-gpio';
 import { validateOptionsExists, validatePinExists } from './util';
 
-type Target = unknown;
-
 type Value = typeof LOW | typeof HIGH;
 
-interface DigitalProps {
-  target: Target;
+interface DigitalProps extends BaseProps {
   pin: string | number;
   mode:
     | typeof Digital.Input
@@ -72,11 +69,6 @@ export class Digital extends Base {
 
   // Unnofficial extension to make TypeScript happy, must equal Rising + Falling
   static RisingAndFalling = 2;
-
-  #target: Target;
-  get target() {
-    return this.#target;
-  }
 
   #gpio: DigitalInput | DigitalOutput;
 
@@ -114,8 +106,9 @@ export class Digital extends Base {
     }
 
     // Initialize the class
-    super();
-    this.#target = options.target;
+    super({
+      target: options.target
+    });
 
     // Initialize the internal pin implementation
     switch (options.mode) {
@@ -160,10 +153,12 @@ export class Digital extends Base {
   }
 
   read() {
+    this[validateOpen]();
     return this.#gpio.value;
   }
 
   write(value: Value) {
+    this[validateOpen]();
     if (this.#gpio instanceof DigitalInput) {
       throw new Error(`Cannot write to an input`);
     }

@@ -26,10 +26,10 @@ SOFTWARE.
 
 import { readFileSync } from 'fs';
 import { I2C as RaspiI2C } from 'raspi-i2c';
-import { Base } from './base';
+import { Base, BaseProps, validateOpen } from './base';
 import { parse, find } from 'ini-builder';
 
-interface I2CProps {
+interface I2CProps extends BaseProps {
   address: number;
   hz: number;
 }
@@ -47,7 +47,7 @@ if (!i2c_arm_baudrate || !('value' in i2c_arm_baudrate)) {
 const BAUDRATE = parseInt(i2c_arm_baudrate.value);
 
 export class I2C extends Base {
-  // The Raspberry Pi doesn't support data, clock, or port, so our defaults are empty
+  // The Raspberry Pi doesn't support data, clock, or port, so our defaults are pretty empty
   static default = {
     hz: BAUDRATE
   };
@@ -77,7 +77,9 @@ export class I2C extends Base {
     }
 
     // Initialize the class
-    super();
+    super({
+      target: options.target
+    });
     this.#address = options.address;
 
     // Initialize I2C if it hasn't been initialized already
@@ -87,6 +89,7 @@ export class I2C extends Base {
   }
 
   read(readLengthOrReadBuffer: number | Buffer, stop: 0 | 1 = 1) {
+    this[validateOpen]();
     if (!i2c) {
       throw new Error(
         'Internal Error: i2c is unexpectedly undefined. This is a bug'
@@ -113,6 +116,7 @@ export class I2C extends Base {
   }
 
   write(buffer: Buffer, stop: 0 | 1 = 1) {
+    this[validateOpen]();
     if (!i2c) {
       throw new Error(
         'Internal Error: i2c is unexpectedly undefined. This is a bug'
