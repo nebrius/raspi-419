@@ -24,18 +24,33 @@ SOFTWARE.
 
 // Implementation of https://419.ecma-international.org/#-10-io-classes-ic
 
+import { readFileSync } from 'fs';
 import { I2C as RaspiI2C } from 'raspi-i2c';
 import { Base } from './base';
+import { parse, find } from 'ini-builder';
 
 interface I2CProps {
   address: number;
+  hz: number;
 }
 
 let i2c: RaspiI2C | undefined;
 
+// Read the baudrate from the system config
+const bootConfig = parse(readFileSync('/boot/config.txt').toString(), {
+  commentDelimiter: '#'
+});
+const i2c_arm_baudrate = find(bootConfig, ['dtparam', 'i2c_arm_baudrate']);
+if (!i2c_arm_baudrate || !('value' in i2c_arm_baudrate)) {
+  throw new Error('Could not parse I2C baudrate from boot config');
+}
+const BAUDRATE = parseInt(i2c_arm_baudrate.value);
+
 export class I2C extends Base {
-  // The Raspberry Pi doesn't support data, clock, hz, or port, so our defaults are empty
-  static default = {};
+  // The Raspberry Pi doesn't support data, clock, or port, so our defaults are empty
+  static default = {
+    hz: BAUDRATE
+  };
 
   #address: number;
   constructor(options: I2CProps) {
@@ -45,25 +60,20 @@ export class I2C extends Base {
     if (!options) {
       throw new Error('options is required');
     }
-    // This is a check for vanilla JavaScript users that might supply this unsupported property
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+    // These checks are for vanilla JavaScript users that might supply unsupported properties
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
     if ((options as any).data !== undefined) {
       throw new Error(`options.data is not supported on the Raspberry Pi`);
     }
-    // This is a check for vanilla JavaScript users that might supply this unsupported property
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
     if ((options as any).clock !== undefined) {
       throw new Error(`options.clock is not supported on the Raspberry Pi`);
     }
-    // This is a check for vanilla JavaScript users that might supply this unsupported property
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-    if ((options as any).hz !== undefined) {
-      throw new Error(`options.hz is not supported on the Raspberry Pi`);
-    }
-    // This is a check for vanilla JavaScript users that might supply this unsupported property
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
     if ((options as any).port !== undefined) {
       throw new Error(`options.port is not supported on the Raspberry Pi`);
+    }
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+    if (options.hz !== BAUDRATE) {
+      throw new Error(`options.hz must be set to ${BAUDRATE}`);
     }
 
     // Initialize the class
@@ -74,5 +84,45 @@ export class I2C extends Base {
     if (!i2c) {
       i2c = new RaspiI2C();
     }
+  }
+
+  read(readLengthOrReadBuffer: number | Buffer, stop: 0 | 1 = 1) {
+    if (!i2c) {
+      throw new Error(
+        'Internal Error: i2c is unexpectedly undefined. This is a bug'
+      );
+    }
+    if (stop !== 1) {
+      throw new Error('I2C#read must have a stop bit of 1 on the Raspberry Pi');
+    }
+    if (
+      typeof readLengthOrReadBuffer !== 'number' &&
+      !(readLengthOrReadBuffer instanceof Buffer)
+    ) {
+      throw new Error(
+        'readLengthOrReadBuffer must be a Buffer or a number representing the length of a buffer'
+      );
+    }
+    const readLength =
+      typeof readLengthOrReadBuffer === 'number'
+        ? readLengthOrReadBuffer
+        : readLengthOrReadBuffer.length;
+    i2c.read(this.#address, readLength, (err, data) => {
+      // TODO: this needs to be asynchronous to perform the actual read, but how?
+    });
+  }
+
+  write(buffer: Buffer, stop: 0 | 1 = 1) {
+    if (!i2c) {
+      throw new Error(
+        'Internal Error: i2c is unexpectedly undefined. This is a bug'
+      );
+    }
+    if (stop !== 1) {
+      throw new Error('I2C#read must have a stop bit of 1 on the Raspberry Pi');
+    }
+    i2c.write(this.#address, buffer, (err) => {
+      // TODO: this needs to be asynchronous to perform the actual write, but how?
+    });
   }
 }
