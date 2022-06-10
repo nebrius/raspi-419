@@ -34,6 +34,9 @@ interface I2CProps {
 let i2c: RaspiI2C | undefined;
 
 export class I2C extends Base {
+  // The Raspberry Pi doesn't support data, clock, hz, or port, so our defaults are empty
+  static default = {};
+
   #address: number;
   constructor(options: I2CProps) {
     // These checks need to work for vanilla JavaScript users as well as
