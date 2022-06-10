@@ -22,23 +22,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-var _a;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _Base_closed, _Base_target;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Base = exports.closed = void 0;
+exports.Base = exports.validateOpen = void 0;
 // We put instances in a set to prevent them from being garbage collected until
 // close() is called
 const instances = new Set();
-exports.closed = Symbol();
+exports.validateOpen = Symbol();
 class Base {
-    constructor() {
-        this[_a] = false;
+    constructor(options) {
+        _Base_closed.set(this, false);
+        _Base_target.set(this, void 0);
+        __classPrivateFieldSet(this, _Base_target, options.target, "f");
         instances.add(this);
     }
+    get target() {
+        return __classPrivateFieldGet(this, _Base_target, "f");
+    }
     close() {
-        this[exports.closed] = true;
+        __classPrivateFieldSet(this, _Base_closed, true, "f");
         instances.delete(this);
+    }
+    [(_Base_closed = new WeakMap(), _Base_target = new WeakMap(), exports.validateOpen)]() {
+        if (__classPrivateFieldGet(this, _Base_closed, "f")) {
+            throw new Error('Cannot perform operation after closing');
+        }
     }
 }
 exports.Base = Base;
-_a = exports.closed;
 //# sourceMappingURL=base.js.map

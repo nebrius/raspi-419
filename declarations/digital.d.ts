@@ -1,9 +1,7 @@
-import { Base } from './base';
+import { Base, BaseProps } from './base';
 import { LOW, HIGH } from 'raspi-gpio';
-declare type Target = unknown;
 declare type Value = typeof LOW | typeof HIGH;
-interface DigitalProps {
-    target: Target;
+interface DigitalProps extends BaseProps {
     pin: string | number;
     mode: typeof Digital.Input | typeof Digital.InputPullUp | typeof Digital.InputPullDown | typeof Digital.Output;
     edge?: typeof Digital.Rising | typeof Digital.Falling | typeof Digital.RisingAndFalling;
@@ -21,7 +19,6 @@ export declare class Digital extends Base {
     static Rising: number;
     static Falling: number;
     static RisingAndFalling: number;
-    get target(): unknown;
     constructor(options: DigitalProps);
     read(): number;
     write(value: Value): void;

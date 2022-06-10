@@ -1,6 +1,11 @@
-export declare const closed: unique symbol;
+export declare const validateOpen: unique symbol;
+export interface BaseProps {
+    target: unknown;
+}
 export declare class Base {
-    [closed]: boolean;
-    constructor();
+    #private;
+    get target(): unknown;
+    constructor(options: BaseProps);
     close(): void;
+    [validateOpen](): void;
 }

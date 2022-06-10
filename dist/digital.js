@@ -22,33 +22,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var _a, _Digital_supportedModesList, _Digital_target, _Digital_gpio;
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _Digital_gpio;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Digital = void 0;
 // Implementation of https://419.ecma-international.org/#-10-io-classes-digital
 const base_1 = require("./base");
 const raspi_gpio_1 = require("raspi-gpio");
-const raspi_board_1 = require("raspi-board");
+const util_1 = require("./util");
 class Digital extends base_1.Base {
     constructor(options) {
-        // These checks need to work for vanilla JavaScript users as well as
-        // TypeScript users, so we have to check things that are impossible in TypeScript
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (!options) {
-            throw new Error('options is required');
-        }
-        if (!__classPrivateFieldGet(Digital, _a, "f", _Digital_supportedModesList).includes(options.mode)) {
+        (0, util_1.validateOptionsExists)(options);
+        if (![
+            Digital.Input,
+            Digital.InputPullUp,
+            Digital.InputPullDown,
+            Digital.Output
+        ].includes(options.mode)) {
             throw new Error(`options.mode must be Digital.Input, Digital.InputPullUp, Digital.InputPullDown, or Digital.Output`);
         }
         if (options.edge !== undefined &&
@@ -58,18 +58,16 @@ class Digital extends base_1.Base {
         if (options.onReadable && !options.edge) {
             throw new Error(`options.edge is required if options.onReadable is supplied`);
         }
-        if ((0, raspi_board_1.getPinNumber)(options.pin) === null) {
-            throw new Error(`Invalid pin: ${options.pin}`);
-        }
+        (0, util_1.validatePinExists)(options.pin);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (options.format !== undefined && options.format !== 'number') {
             throw new Error(`options.format must be "number" if supplied`);
         }
         // Initialize the class
-        super();
-        _Digital_target.set(this, void 0);
+        super({
+            target: options.target
+        });
         _Digital_gpio.set(this, void 0);
-        __classPrivateFieldSet(this, _Digital_target, options.target, "f");
         // Initialize the internal pin implementation
         switch (options.mode) {
             case Digital.Input: {
@@ -108,13 +106,12 @@ class Digital extends base_1.Base {
             __classPrivateFieldGet(this, _Digital_gpio, "f").on('change', options.onReadable);
         }
     }
-    get target() {
-        return __classPrivateFieldGet(this, _Digital_target, "f");
-    }
     read() {
+        this[base_1.validateOpen]();
         return __classPrivateFieldGet(this, _Digital_gpio, "f").value;
     }
     write(value) {
+        this[base_1.validateOpen]();
         if (__classPrivateFieldGet(this, _Digital_gpio, "f") instanceof raspi_gpio_1.DigitalInput) {
             throw new Error(`Cannot write to an input`);
         }
@@ -126,7 +123,7 @@ class Digital extends base_1.Base {
     }
 }
 exports.Digital = Digital;
-_a = Digital, _Digital_target = new WeakMap(), _Digital_gpio = new WeakMap();
+_Digital_gpio = new WeakMap();
 // Pin modes
 Digital.Input = 1;
 Digital.InputPullUp = 2;
@@ -134,12 +131,6 @@ Digital.InputPullDown = 3;
 Digital.InputPullUpDown = 4;
 Digital.Output = 5;
 Digital.OutputOpenDrain = 6;
-_Digital_supportedModesList = { value: [
-        Digital.Input,
-        Digital.InputPullUp,
-        Digital.InputPullDown,
-        Digital.Output
-    ] };
 // Edge for onReadable, must be a number because it's valid to do
 // Digital.Rising + DIgital.Falling
 Digital.Rising = 1;

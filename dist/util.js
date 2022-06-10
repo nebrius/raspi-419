@@ -23,9 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.I2C = exports.Digital = void 0;
-var digital_1 = require("./digital");
-Object.defineProperty(exports, "Digital", { enumerable: true, get: function () { return digital_1.Digital; } });
-var i2c_1 = require("./i2c");
-Object.defineProperty(exports, "I2C", { enumerable: true, get: function () { return i2c_1.I2C; } });
-//# sourceMappingURL=index.js.map
+exports.validatePinExists = exports.validateOptionsExists = void 0;
+const raspi_board_1 = require("raspi-board");
+function validateOptionsExists(options) {
+    if (!options) {
+        throw new Error('options is required');
+    }
+}
+exports.validateOptionsExists = validateOptionsExists;
+function validatePinExists(pin, name) {
+    if (pin === undefined) {
+        throw new Error(`Pin${name ? ` ${name}` : ''} must be defined`);
+    }
+    if ((0, raspi_board_1.getPinNumber)(pin) === null) {
+        throw new Error(`Invalid${name ? ` ${name}` : ''} pin: ${pin}`);
+    }
+}
+exports.validatePinExists = validatePinExists;
+//# sourceMappingURL=util.js.map
