@@ -34,7 +34,7 @@ import {
   DigitalInput,
   DigitalOutput
 } from 'raspi-gpio';
-import { getPinNumber } from 'raspi-board';
+import { validateOptionsExists, validatePinExists } from './util';
 
 type Target = unknown;
 
@@ -65,13 +65,6 @@ export class Digital extends Base {
   static Output = 5;
   static OutputOpenDrain = 6;
 
-  static #supportedModesList = [
-    Digital.Input,
-    Digital.InputPullUp,
-    Digital.InputPullDown,
-    Digital.Output
-  ];
-
   // Edge for onReadable, must be a number because it's valid to do
   // Digital.Rising + DIgital.Falling
   static Rising = 1;
@@ -88,13 +81,15 @@ export class Digital extends Base {
   #gpio: DigitalInput | DigitalOutput;
 
   constructor(options: DigitalProps) {
-    // These checks need to work for vanilla JavaScript users as well as
-    // TypeScript users, so we have to check things that are impossible in TypeScript
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!options) {
-      throw new Error('options is required');
-    }
-    if (!Digital.#supportedModesList.includes(options.mode)) {
+    validateOptionsExists(options);
+    if (
+      ![
+        Digital.Input,
+        Digital.InputPullUp,
+        Digital.InputPullDown,
+        Digital.Output
+      ].includes(options.mode)
+    ) {
       throw new Error(
         `options.mode must be Digital.Input, Digital.InputPullUp, Digital.InputPullDown, or Digital.Output`
       );
@@ -112,9 +107,7 @@ export class Digital extends Base {
         `options.edge is required if options.onReadable is supplied`
       );
     }
-    if (getPinNumber(options.pin) === null) {
-      throw new Error(`Invalid pin: ${options.pin}`);
-    }
+    validatePinExists(options.pin);
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (options.format !== undefined && options.format !== 'number') {
       throw new Error(`options.format must be "number" if supplied`);
