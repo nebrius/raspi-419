@@ -1,6 +1,8 @@
 # raspi-419
 An implementation of the ECMA-419 spec on the Raspberry Pi
 
+Note: This project is abandoned. After digging through the spec, I realized that the Raspberry Pi isn't a good fit for this spec. The spec was primarily designed for bare metal or RTOS based microcontrollers, such as the Arduino and ESP families. On these platforms, it's important that APIs have low-latency, leading to a preference for synchronous operations. However, on multi-user operating systems such as Linux like the Raspberry Pi runs, this is inverted, where not tying up resources is more important than latency, leading to a preference for _asynchronous_ operations.
+
 ## Licsense
 
 MIT License
